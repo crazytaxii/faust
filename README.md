@@ -4,7 +4,7 @@ Faust 是一款 Go 编写的轻量化工具，使用它将本地图片转换成 
 
 ## 下载
 
-**需要事先安装 Go 和配置开发环境**
+**需要事先安装 Go 和配置开发环境！**
 
 ```bash
 $ go get github.com/crazytaxii/faust
@@ -44,15 +44,15 @@ $ ./faust -a secret_key
 Bucket 是存放图片的存储空间
 
 ```bash
-$ ./faust -b bucket name
+$ ./faust -b bucket_name
 ```
 
-### 域名
+### 添加域名（[域名接入七牛云存储](https://developer.qiniu.com/fusion/manual/4939/the-domain-name-to-access)）
 
 已绑定存储空间的融合 CDN 加速域名
 
 ```bash
-$ ./faust -d your domain
+$ ./faust -d your_domain
 ```
 
 ## 使用
