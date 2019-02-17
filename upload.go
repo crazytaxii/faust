@@ -75,6 +75,6 @@ func upload(srcFile, accessKey, secretKey, bucket string) error {
 	fmt.Println("key:", ret.Key)
 	fmt.Println("file size:", ret.Fsize)
 	fmt.Println("hash:", ret.Hash)
-	fmt.Println("public access url:", storage.MakePublicURL(domain, ret.Key))
+	fmt.Println("public access url:", storage.MakePublicURL(conf.Domain, ret.Key))
 	return nil
 }
