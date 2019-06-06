@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
+
+	"github.com/urfave/cli"
 )
 
 func loadConfig(fileName string) error {
@@ -21,14 +23,6 @@ func loadConfig(fileName string) error {
 	return json.Unmarshal(data, conf)
 }
 
-func saveConfig(fileName string) error {
-	j, err := json.MarshalIndent(conf, "", "    ")
-	if err != nil {
-		return err
-	}
-	return ioutil.WriteFile(fileName, j, 0644)
-}
-
 func createConfig(fileName string) error {
 	conf := &Config{}
 	j, err := json.MarshalIndent(conf, "", "    ")
@@ -36,4 +30,12 @@ func createConfig(fileName string) error {
 		return err
 	}
 	return ioutil.WriteFile(fileName, j, 0644)
+}
+
+func saveConfig(c *cli.Context) error {
+	j, err := json.MarshalIndent(conf, "", "    ")
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(configFile, j, 0644)
 }

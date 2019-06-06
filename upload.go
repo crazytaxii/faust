@@ -11,6 +11,7 @@ import (
 
 	"github.com/qiniu/api.v7/auth/qbox"
 	"github.com/qiniu/api.v7/storage"
+	"github.com/urfave/cli"
 )
 
 type MyPutRet struct {
@@ -21,30 +22,30 @@ type MyPutRet struct {
 	Name   string
 }
 
-func upload(srcFile, accessKey, secretKey, bucket string) error {
+func upload(c *cli.Context) error {
 	putPolicy := storage.PutPolicy{
-		Scope:      bucket,
+		Scope:      conf.Bucket,
 		Expires:    3600,
 		ReturnBody: `{"key":"$(key)","hash":"$(etag)","fsize":$(fsize),"bucket":"$(bucket)","name":"$(x:name)"}`,
 	}
-	mac := qbox.NewMac(accessKey, secretKey)
+	mac := qbox.NewMac(conf.AccessKey, conf.SecretKey)
 	upToken := putPolicy.UploadToken(mac)
 
 	cfg := &storage.Config{}
 	formUploader := storage.NewFormUploader(cfg)
 	ret := &MyPutRet{}
-	putExtra := &storage.PutExtra{}
 
+	putExtra := &storage.PutExtra{}
 	key := fmt.Sprintf("%s/%s.jpg", getDate(), randNum(10000000, 100000000))
 
-	srcImg, err := os.Open(srcFile)
+	srcImg, err := os.Open(imgPath)
 	if err != nil {
 		return err
 	}
 	defer srcImg.Close()
 
 	var outBuf []byte
-	switch fp.Ext(srcFile) {
+	switch fp.Ext(imgPath) {
 	case "." + getImgExtension(JPG):
 		outBuf, err = ioutil.ReadAll(srcImg)
 		if err != nil {
@@ -59,7 +60,7 @@ func upload(srcFile, accessKey, secretKey, bucket string) error {
 	case "." + getImgExtension(WEBP):
 		fallthrough
 	case "." + getImgExtension(TIFF):
-		outBuf, err = imgConvert(srcFile, JPG)
+		outBuf, err = imgConvert(imgPath, JPG)
 		if err != nil {
 			return err
 		}
@@ -75,6 +76,6 @@ func upload(srcFile, accessKey, secretKey, bucket string) error {
 	fmt.Println("key:", ret.Key)
 	fmt.Println("file size:", ret.Fsize)
 	fmt.Println("hash:", ret.Hash)
-	fmt.Println("public access url:", storage.MakePublicURL(conf.Domain, ret.Key))
+	fmt.Println("public access url:", storage.MakePublicURL(conf.BaseUrl, ret.Key))
 	return nil
 }

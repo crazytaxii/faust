@@ -10,10 +10,10 @@
 			"tree": true
 		},
 		{
-			"checksumSHA1": "qSxaWCDRIPhQFvUPLCgb/Fc/2c0=",
-			"path": "github.com/crazytaxii/faust",
-			"revision": "f090ea4c5b3d3cb4381babfd1c354d10001f6fdb",
-			"revisionTime": "2019-02-09T04:16:09Z"
+			"checksumSHA1": "t/KUEfBVBOHJwg6TPZgk4WzGrXU=",
+			"path": "github.com/qiniu/api.v7",
+			"revision": "bea02cd22bf47c650b3c7f0fa001885e7cf7d483",
+			"revisionTime": "2019-05-20T05:34:55Z"
 		},
 		{
 			"checksumSHA1": "S8HOwhDrcgqDyywBZHDVf0/8j0Q=",
@@ -32,6 +32,12 @@
 			"path": "github.com/qiniu/api.v7/storage",
 			"revision": "ea6911b40d3d831383c5470d96ca37e8637b8235",
 			"revisionTime": "2019-01-03T02:08:48Z"
+		},
+		{
+			"checksumSHA1": "F3LHTrjbi6xZiFlSdlg0z1KwSCM=",
+			"path": "github.com/qiniu/x",
+			"revision": "f512abcf45ab4e2ba0fd4784c57b53d495997d66",
+			"revisionTime": "2015-07-21T03:41:13Z"
 		},
 		{
 			"checksumSHA1": "beTNGx1rXgzHQQKZzLDl6WJPafg=",
@@ -58,6 +64,12 @@
 			"revisionTime": "2015-07-21T03:41:13Z"
 		},
 		{
+			"checksumSHA1": "ef7fqXCjAavRO2aCl7FOKEqoqrg=",
+			"path": "github.com/urfave/cli",
+			"revision": "693af58b4d51b8fcc7f9d89576da170765980581",
+			"revisionTime": "2019-02-03T18:40:40Z"
+		},
+		{
 			"checksumSHA1": "UD/pejajPyS7WaWVXq2NU1eK4Ic=",
 			"path": "golang.org/x/image/bmp",
 			"revision": "12117c17ca67ffa1ce22e9409f3b0b0a93ac08c7",
@@ -80,6 +92,12 @@
 			"path": "golang.org/x/net/context",
 			"revision": "c44066c5c816ec500d459a2a324a753f78531ae0",
 			"revisionTime": "2018-10-29T02:24:31Z"
+		},
+		{
+			"checksumSHA1": "SoN97VwLSEzt6BsuzdWLSA/x/TI=",
+			"path": "qiniupkg.com/x",
+			"revision": "f512abcf45ab4e2ba0fd4784c57b53d495997d66",
+			"revisionTime": "2015-07-21T03:41:13Z"
 		},
 		{
 			"checksumSHA1": "9t2exgz3OI0iupx2XzTY64dTNTI=",
