@@ -17,7 +17,6 @@ type Config struct {
 	AccessKey string `json:"access_key"`
 	SecretKey string `json:"secret_key"`
 	Bucket    string `json:"bucket"`
-	Domain    string `json:"domain"`
 	BaseUrl   string `json:"base_url"`
 }
 
@@ -66,12 +65,6 @@ func main() {
 			Usage:       "bucket name",
 			Value:       conf.Bucket,
 			Destination: &conf.Bucket,
-		},
-		cli.StringFlag{
-			Name:        "domain",
-			Usage:       "your domain",
-			Value:       conf.Domain,
-			Destination: &conf.Domain,
 		},
 		cli.StringFlag{
 			Name:        "base_url",

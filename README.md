@@ -23,45 +23,29 @@ $ go build
 1. 点击[注册](https://portal.qiniu.com/signup?ref=developer.qiniu.com)开通七牛开发者帐号
 2. 如果已有账号，直接登录七牛开发者后台，点击[这里](https://portal.qiniu.com/user/key)查看 Access Key 和 Secret Key
 
-### 添加 Access Key
++ Access Key
++ Secret Key
++ Bucket
++ Base URL (已绑定存储空间的融合 CDN 加速域名，比如 https://pic.crazytaxii.com)
 
-设置七牛账号的 Access Key
-
-```bash
-$ ./faust -a access_key
-```
-
-### 添加 Secret Key
-
-设置七牛账号的 Secret Key
+**[域名接入七牛云存储](https://developer.qiniu.com/fusion/manual/4939/the-domain-name-to-access)**
 
 ```bash
-$ ./faust -a secret_key
-```
-
-### 添加 Bucket
-
-Bucket 是存放图片的存储空间
-
-```bash
-$ ./faust -b bucket_name
-```
-
-### 添加域名（[域名接入七牛云存储](https://developer.qiniu.com/fusion/manual/4939/the-domain-name-to-access)）
-
-已绑定存储空间的融合 CDN 加速域名
-
-```bash
-$ ./faust -d your_domain
+$ ./faust \
+  --access_key your_access_key \
+  --secret_key your_secret_key \
+  --bucket bucket_name \
+  --base_url your_base_url \
+  config
 ```
 
 ## 使用
 
 ```bash
-$ ./faust -i ./test/Go-Logo_Fuchsia.jpg
+$ ./faust --image ./test/Go-Logo_Fuchsia.jpg upload
 bucket: markdown
 key: 19-02-17/94939921.jpg
 file size: 71447
 hash: FhpxfGzt6T241vme6_7j1CUEYw0k
-public access url: pic.crazytaxii.com/19-02-17/94939921.jpg
+public access url: https://pic.crazytaxii.com/19-02-17/94939921.jpg
 ```
