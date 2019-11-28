@@ -4,7 +4,7 @@ Faust 是一款 Go 编写的轻量化工具，使用它将本地图片转换成 
 
 ## 下载
 
-**需要事先安装 Go 和配置开发环境！**
+**需要事先配置好 Go (1.11+) 开发环境！**
 
 ```bash
 $ go get github.com/crazytaxii/faust
@@ -13,7 +13,7 @@ $ go get github.com/crazytaxii/faust
 ## 编译
 
 ```bash
-$ go build
+$ make build
 ```
 
 ## 配置
@@ -23,10 +23,10 @@ $ go build
 1. 点击[注册](https://portal.qiniu.com/signup?ref=developer.qiniu.com)开通七牛开发者帐号
 2. 如果已有账号，直接登录七牛开发者后台，点击[这里](https://portal.qiniu.com/user/key)查看 Access Key 和 Secret Key
 
-+ Access Key
-+ Secret Key
-+ Bucket
-+ Base URL (已绑定存储空间的融合 CDN 加速域名，比如 https://pic.crazytaxii.com)
+- Access Key
+- Secret Key
+- Bucket
+- Base URL (已绑定存储空间的融合 CDN 加速域名，比如 https://pic.crazytaxii.com)
 
 **[域名接入七牛云存储](https://developer.qiniu.com/fusion/manual/4939/the-domain-name-to-access)**
 

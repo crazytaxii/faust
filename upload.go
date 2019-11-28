@@ -22,13 +22,14 @@ type MyPutRet struct {
 	Name   string
 }
 
-func upload(c *cli.Context) error {
+func (fc *FaustClient) Upload(c *cli.Context) error {
+	imgPath := c.String("image")
 	putPolicy := storage.PutPolicy{
-		Scope:      conf.Bucket,
+		Scope:      fc.Config.Bucket,
 		Expires:    3600,
 		ReturnBody: `{"key":"$(key)","hash":"$(etag)","fsize":$(fsize),"bucket":"$(bucket)","name":"$(x:name)"}`,
 	}
-	mac := qbox.NewMac(conf.AccessKey, conf.SecretKey)
+	mac := qbox.NewMac(fc.Config.AccessKey, fc.Config.SecretKey)
 	upToken := putPolicy.UploadToken(mac)
 
 	cfg := &storage.Config{}
@@ -76,6 +77,6 @@ func upload(c *cli.Context) error {
 	fmt.Println("key:", ret.Key)
 	fmt.Println("file size:", ret.Fsize)
 	fmt.Println("hash:", ret.Hash)
-	fmt.Println("public access url:", storage.MakePublicURL(conf.BaseUrl, ret.Key))
+	fmt.Println("public access url:", storage.MakePublicURL(fc.Config.BaseUrl, ret.Key))
 	return nil
 }

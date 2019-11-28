@@ -8,89 +8,94 @@ import (
 )
 
 const (
-	APP_NAME    = "faust"
-	APP_USAGE   = "A simple tool for qiniu cloud"
-	APP_VERSION = "0.9.1"
+	AppName  = "faust"
+	AppUsage = "A simple tool for qiniu cloud"
 )
 
-type Config struct {
-	AccessKey string `json:"access_key"`
-	SecretKey string `json:"secret_key"`
-	Bucket    string `json:"bucket"`
-	BaseUrl   string `json:"base_url"`
+var AppVersion string
+
+type QiniuConfig struct {
+	AccessKey string `yaml:"access_key"`
+	SecretKey string `yaml:"secret_key"`
+	Bucket    string `yaml:"bucket"`
+	BaseUrl   string `yaml:"base_url"`
 }
 
-var conf *Config
-var imgPath string
+type FaustClient struct {
+	Config         *QiniuConfig
+	App            *cli.App
+	ConfigFilePath string
+}
 
-const (
-	configFile = "./config.json"
-)
+const ConfigFile = "./config.yaml"
 
-func init() {
-	conf = &Config{}
-	err := loadConfig(configFile)
+func main() {
+	fc := &FaustClient{}
+	err := fc.LoadConfig(ConfigFile)
+	if err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	}
+
+	fc.NewApp(AppName, AppUsage, AppVersion)
+	fc.App.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name:  "image",
+			Usage: "image path",
+		},
+		cli.StringFlag{
+			Name:        "access_key",
+			Usage:       "access key",
+			Value:       fc.Config.AccessKey,
+			Destination: &fc.Config.AccessKey,
+		},
+		cli.StringFlag{
+			Name:        "secret_key",
+			Usage:       "secret key",
+			Value:       fc.Config.SecretKey,
+			Destination: &fc.Config.SecretKey,
+		},
+		cli.StringFlag{
+			Name:        "bucket",
+			Usage:       "bucket name",
+			Value:       fc.Config.Bucket,
+			Destination: &fc.Config.Bucket,
+		},
+		cli.StringFlag{
+			Name:        "base_url",
+			Usage:       "base url",
+			Value:       fc.Config.BaseUrl,
+			Destination: &fc.Config.BaseUrl,
+		},
+	}
+	fc.App.Commands = []cli.Command{
+		{
+			Name:    "upload",
+			Aliases: []string{"u"},
+			Usage:   "Uploads image to Object Storage",
+			Action:  fc.Upload,
+		},
+		{
+			Name:    "config",
+			Aliases: []string{"c"},
+			Usage:   "Saves configurations",
+			Action: func(c *cli.Context) error {
+				return fc.SaveConfig()
+			},
+		},
+	}
+	err = fc.App.Run(os.Args)
 	if err != nil {
 		log.Fatal(err)
 		os.Exit(1)
 	}
 }
 
-func main() {
-	app := cli.NewApp()
-	app.Name = APP_NAME
-	app.Usage = APP_USAGE
-	app.Version = APP_VERSION
-
-	app.Flags = []cli.Flag{
-		cli.StringFlag{
-			Name:        "image",
-			Usage:       "image path",
-			Destination: &imgPath,
-		},
-		cli.StringFlag{
-			Name:        "access_key",
-			Usage:       "access key",
-			Value:       conf.AccessKey,
-			Destination: &conf.AccessKey,
-		},
-		cli.StringFlag{
-			Name:        "secret_key",
-			Usage:       "secret key",
-			Value:       conf.SecretKey,
-			Destination: &conf.SecretKey,
-		},
-		cli.StringFlag{
-			Name:        "bucket",
-			Usage:       "bucket name",
-			Value:       conf.Bucket,
-			Destination: &conf.Bucket,
-		},
-		cli.StringFlag{
-			Name:        "base_url",
-			Usage:       "base url",
-			Value:       conf.BaseUrl,
-			Destination: &conf.BaseUrl,
-		},
-	}
-
-	app.Commands = []cli.Command{
-		{
-			Name:    "upload",
-			Aliases: []string{"u"},
-			Usage:   "Uploads image to Object Storage",
-			Action:  upload,
-		},
-		{
-			Name:    "config",
-			Aliases: []string{"c"},
-			Usage:   "Saves configurations",
-			Action:  saveConfig,
-		},
-	}
-
-	err := app.Run(os.Args)
-	if err != nil {
-		log.Fatal(err)
-	}
+// New a cli app
+func (fc *FaustClient) NewApp(name, usage, version string) {
+	fc.App = cli.NewApp()
+	fc.App.Name = name
+	fc.App.Usage = usage
+	fc.App.Version = version
+	fc.Config = &QiniuConfig{}
 }

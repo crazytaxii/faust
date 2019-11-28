@@ -1,0 +1,17 @@
+github.com/chai2010/webp v1.0.1-0.20181106013531-76ae9d0b5d6d h1:drhYZsw8NFquBItJFrA2TfMrpxUy4WAtdG6BlZ0erFk=
+github.com/chai2010/webp v1.0.1-0.20181106013531-76ae9d0b5d6d/go.mod h1:LP12PG5IFmLGHUU26tBiCBKnghxx3toZFwDjOYvd3Ow=
+github.com/qiniu/api.v7 v7.2.6-0.20190103020848-ea6911b40d3d+incompatible h1:Q4ylmCP29MihqUfWs41G4Pb299ayMsAWwcpe9Asa1xk=
+github.com/qiniu/api.v7 v7.2.6-0.20190103020848-ea6911b40d3d+incompatible/go.mod h1:V8/EzlTgLN6q0s0CJmg/I81ytsvldSF22F7h6MI02+c=
+github.com/qiniu/x v0.0.0-20150721034113-f512abcf45ab h1:LoiKx8URJLymdfVAtTDfuSG24co0WdQi5WuNVljsF90=
+github.com/qiniu/x v0.0.0-20150721034113-f512abcf45ab/go.mod h1:KpRKWYG/GaidPQVpoQ2Cvuvtts3gYnoo2PftgdmAiU4=
+github.com/urfave/cli v1.20.1-0.20190203184040-693af58b4d51 h1:9BPDfnoHp4nfdJvTcgc5nHV8Wh9gRJwH4xNylDIiAbQ=
+github.com/urfave/cli v1.20.1-0.20190203184040-693af58b4d51/go.mod h1:70zkFmudgCuE/ngEzBv17Jvp/497gISqfk5gWijbERA=
+golang.org/x/image v0.0.0-20171214225156-12117c17ca67 h1:L8S612DBEq9tpLTxczHuhrf5il+KEdSha8b5A5njQMc=
+golang.org/x/image v0.0.0-20171214225156-12117c17ca67/go.mod h1:ux5Hcp/YLpHSI86hEcLt0YII63i6oz57MZXIpbrjZUs=
+golang.org/x/net v0.0.0-20181029044818-c44066c5c816 h1:mVFkLpejdFLXVUv9E42f3XJVfMdqd0IVLVIVLjZWn5o=
+golang.org/x/net v0.0.0-20181029044818-c44066c5c816/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=
+gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
+gopkg.in/yaml.v3 v3.0.0-20191120175047-4206685974f2 h1:XZx7nhd5GMaZpmDaEHFVafUZC7ya0fuo7cSJ3UCKYmM=
+gopkg.in/yaml.v3 v3.0.0-20191120175047-4206685974f2/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
+qiniupkg.com/x v0.0.0-20150721034113-f512abcf45ab h1:AvogMPHEAtucyBKlkVMC/YQnczuSlSdR5eXBhsFw/vo=
+qiniupkg.com/x v0.0.0-20150721034113-f512abcf45ab/go.mod h1:6sLxR5IZ03vMaRAQAY/5MvzofeoBIjO4XE0Njv6V1ms=

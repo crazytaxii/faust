@@ -1,41 +1,34 @@
 package main
 
 import (
-	"encoding/json"
 	"io/ioutil"
 	"os"
 
-	"github.com/urfave/cli"
+	"gopkg.in/yaml.v3"
 )
 
-func loadConfig(fileName string) error {
-	_, err := os.Stat(fileName)
+// Load config from yaml file.
+func (fc *FaustClient) LoadConfig(file string) error {
+	fc.ConfigFilePath = file
+	_, err := os.Stat(file)
 	if os.IsNotExist(err) {
-		err = createConfig(fileName)
+		err = fc.SaveConfig()
 		if err != nil {
 			return err
 		}
 	}
-	data, err := ioutil.ReadFile(fileName)
+	content, err := ioutil.ReadFile(file)
 	if err != nil {
 		return err
 	}
-	return json.Unmarshal(data, conf)
+	return yaml.Unmarshal(content, &fc.Config)
 }
 
-func createConfig(fileName string) error {
-	conf := &Config{}
-	j, err := json.MarshalIndent(conf, "", "    ")
+// Create a new config file.
+func (fc *FaustClient) SaveConfig() error {
+	y, err := yaml.Marshal(fc.Config)
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(fileName, j, 0644)
-}
-
-func saveConfig(c *cli.Context) error {
-	j, err := json.MarshalIndent(conf, "", "    ")
-	if err != nil {
-		return err
-	}
-	return ioutil.WriteFile(configFile, j, 0644)
+	return ioutil.WriteFile(fc.ConfigFilePath, y, 0644)
 }
