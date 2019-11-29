@@ -16,6 +16,12 @@ $ go get github.com/crazytaxii/faust
 $ make build
 ```
 
+## 安装
+
+```bash
+$ make install
+```
+
 ## 配置
 
 七牛云所有的功能，都需要合法的授权。授权凭证的签算需要七牛账号下的一对有效的 Access Key 和 Secret Key，这对密钥可以通过如下步骤获得：
@@ -38,6 +44,8 @@ $ ./faust \
   --base_url your_base_url \
   config
 ```
+
+> 配置文件 config.yaml 默认生成在 ~/.faust 路径。
 
 ## 使用
 

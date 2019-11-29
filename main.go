@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
+	"os/user"
 
 	"github.com/urfave/cli"
 )
@@ -12,22 +14,34 @@ const (
 	AppUsage = "A simple tool for qiniu cloud"
 )
 
-var AppVersion string
-
-type QiniuConfig struct {
-	AccessKey string `yaml:"access_key"`
-	SecretKey string `yaml:"secret_key"`
-	Bucket    string `yaml:"bucket"`
-	BaseUrl   string `yaml:"base_url"`
-}
+var (
+	AppVersion string
+	ConfigFile string
+)
 
 type FaustClient struct {
 	Config         *QiniuConfig
 	App            *cli.App
 	ConfigFilePath string
+	ImgPath        string
 }
 
-const ConfigFile = "./config.yaml"
+func init() {
+	user, err := user.Current()
+	if err != nil {
+		log.Fatal(err)
+	}
+	abs := fmt.Sprintf("%s/.faust", user.HomeDir)
+	// check ~/.faust is existed
+	if _, err := os.Stat(abs); os.IsNotExist(err) {
+		// mkdir ~/.faust
+		if err := os.Mkdir(abs, 0755); err != nil {
+			log.Fatal(err)
+			os.Exit(1)
+		}
+	}
+	ConfigFile = fmt.Sprintf("%s/config.yaml", abs)
+}
 
 func main() {
 	fc := &FaustClient{}
@@ -40,8 +54,9 @@ func main() {
 	fc.NewApp(AppName, AppUsage, AppVersion)
 	fc.App.Flags = []cli.Flag{
 		cli.StringFlag{
-			Name:  "image",
-			Usage: "image path",
+			Name:        "image",
+			Usage:       "image path",
+			Destination: &fc.ImgPath,
 		},
 		cli.StringFlag{
 			Name:        "access_key",
@@ -91,11 +106,10 @@ func main() {
 	}
 }
 
-// New a cli app
+// New a cli app.
 func (fc *FaustClient) NewApp(name, usage, version string) {
 	fc.App = cli.NewApp()
 	fc.App.Name = name
 	fc.App.Usage = usage
 	fc.App.Version = version
-	fc.Config = &QiniuConfig{}
 }

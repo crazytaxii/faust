@@ -23,7 +23,6 @@ type MyPutRet struct {
 }
 
 func (fc *FaustClient) Upload(c *cli.Context) error {
-	imgPath := c.String("image")
 	putPolicy := storage.PutPolicy{
 		Scope:      fc.Config.Bucket,
 		Expires:    3600,
@@ -39,14 +38,14 @@ func (fc *FaustClient) Upload(c *cli.Context) error {
 	putExtra := &storage.PutExtra{}
 	key := fmt.Sprintf("%s/%s.jpg", getDate(), randNum(10000000, 100000000))
 
-	srcImg, err := os.Open(imgPath)
+	srcImg, err := os.Open(fc.ImgPath)
 	if err != nil {
 		return err
 	}
 	defer srcImg.Close()
 
 	var outBuf []byte
-	switch fp.Ext(imgPath) {
+	switch fp.Ext(fc.ImgPath) {
 	case "." + getImgExtension(JPG):
 		outBuf, err = ioutil.ReadAll(srcImg)
 		if err != nil {
@@ -61,7 +60,7 @@ func (fc *FaustClient) Upload(c *cli.Context) error {
 	case "." + getImgExtension(WEBP):
 		fallthrough
 	case "." + getImgExtension(TIFF):
-		outBuf, err = imgConvert(imgPath, JPG)
+		outBuf, err = imgConvert(fc.ImgPath, JPG)
 		if err != nil {
 			return err
 		}

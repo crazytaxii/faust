@@ -7,13 +7,21 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+type QiniuConfig struct {
+	AccessKey string `yaml:"access_key"`
+	SecretKey string `yaml:"secret_key"`
+	Bucket    string `yaml:"bucket"`
+	BaseUrl   string `yaml:"base_url"`
+}
+
 // Load config from yaml file.
 func (fc *FaustClient) LoadConfig(file string) error {
 	fc.ConfigFilePath = file
-	_, err := os.Stat(file)
-	if os.IsNotExist(err) {
-		err = fc.SaveConfig()
-		if err != nil {
+	fc.Config = &QiniuConfig{}
+	// check ~/.faust/config.yaml is existed
+	if _, err := os.Stat(file); os.IsNotExist(err) {
+		// create ~/.faust/config.yaml
+		if err := fc.SaveConfig(); err != nil {
 			return err
 		}
 	}
