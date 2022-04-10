@@ -12,4 +12,7 @@
 *.out
 
 # Binary
-faust
+dist
+
+# VSCode
+.vscode

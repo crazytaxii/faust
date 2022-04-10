@@ -1,10 +1,10 @@
+TARGET ?= faust
+ODIR ?= dist
+
 PHONY: build install
 
-TARGET ?= faust
-ODIR ?= .
-
 build:
-	go build -ldflags="-X 'main.AppVersion=$(shell git rev-parse --short HEAD)'" -o $(ODIR)/$(TARGET) .
+	go build -ldflags="-X 'main.AppVersion=$(shell git rev-parse --short HEAD)'" -o $(ODIR)/$(TARGET) ./cmd/faust
 
-install:
+install: build
 	cp $(ODIR)/$(TARGET) /usr/local/bin
