@@ -2,10 +2,10 @@
 
 Faust 是一款将本地图片上传至七牛云对象存储的小工具。目前支持：
 
-- JPG
-- PNG
-- WEBP
-- GIF
+- jpg
+- png
+- webp
+- gif
 
 ## 编译
 

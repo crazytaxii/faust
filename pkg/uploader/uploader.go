@@ -11,6 +11,7 @@ import (
 	"os"
 
 	"github.com/crazytaxii/faust/pkg/uploader/utils"
+
 	"github.com/qiniu/go-sdk/v7/auth"
 	"github.com/qiniu/go-sdk/v7/auth/qbox"
 	"github.com/qiniu/go-sdk/v7/storage"

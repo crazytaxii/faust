@@ -17,7 +17,6 @@ func getDate() string {
 }
 
 func randNum(length int) string {
-	rand.Seed(time.Now().Unix())
 	min, max := 1, 10
 	for i := 1; i < length; i++ {
 		min, max = min*10, max*10

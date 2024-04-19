@@ -1,8 +1,9 @@
 module github.com/crazytaxii/faust
 
-go 1.20
+go 1.21
 
 require (
+	github.com/docker/go-units v0.5.0
 	github.com/qiniu/go-sdk/v7 v7.17.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/viper v1.16.0

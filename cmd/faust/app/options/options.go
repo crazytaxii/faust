@@ -2,6 +2,7 @@ package options
 
 import (
 	"github.com/crazytaxii/faust/cmd/faust/app/config"
+
 	"github.com/urfave/cli/v2"
 )
 

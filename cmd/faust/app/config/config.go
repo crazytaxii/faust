@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/crazytaxii/faust/pkg/uploader"
+
 	"github.com/spf13/viper"
 )
 

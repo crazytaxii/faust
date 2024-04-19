@@ -6,15 +6,20 @@ import (
 	"github.com/crazytaxii/faust/cmd/faust/app/config"
 	"github.com/crazytaxii/faust/cmd/faust/app/options"
 	"github.com/crazytaxii/faust/pkg/uploader"
+
+	"github.com/docker/go-units"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
 )
 
-func NewFaustApp(ver string) *cli.App {
+func init() {
 	log.SetFormatter(&log.TextFormatter{
 		ForceColors:   true,
 		FullTimestamp: true,
 	})
+}
+
+func NewFaustApp(ver string) *cli.App {
 	opts := options.NewAppOptions()
 	cfg := config.NewAppConfig()
 
@@ -31,16 +36,14 @@ func NewFaustApp(ver string) *cli.App {
 				Name:    "upload",
 				Aliases: []string{"up"},
 				Usage:   "upload image to object storage service",
-				Action: func(c *cli.Context) error {
-					var err error
+				Action: func(c *cli.Context) (err error) {
 					defer func() {
 						if err != nil {
 							log.Errorf("error uploading image: %v", err)
 						}
 					}()
 
-					cfg, err = opts.Config()
-					if err != nil {
+					if cfg, err = opts.Config(); err != nil {
 						return err
 					}
 
@@ -51,7 +54,13 @@ func NewFaustApp(ver string) *cli.App {
 					if err != nil {
 						return err
 					}
-					log.Infof("image url: %v", res.URLs)
+					log.WithFields(
+						log.Fields{
+							"key":  res.Key,
+							"size": units.HumanSize(float64(res.Fsize)),
+							"hash": res.Hash,
+						},
+					).Infof("image url: %v", res.URLs)
 					return nil
 				},
 				Flags: cfg.QServiceConfig.Flags(),
