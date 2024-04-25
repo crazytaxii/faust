@@ -10,6 +10,7 @@ import (
 	"io"
 	"os"
 
+	_ "github.com/crazytaxii/faust/pkg/image/avif"
 	"github.com/crazytaxii/faust/pkg/uploader/utils"
 
 	"github.com/qiniu/go-sdk/v7/auth"

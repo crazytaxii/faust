@@ -6,6 +6,7 @@ Faust 是一款将本地图片上传至七牛云对象存储的小工具。目�
 - png
 - webp
 - gif
+- [avif](https://aomediacodec.github.io/av1-avif/)
 
 ## 编译
 
