@@ -7,6 +7,7 @@ Faust 是一款将本地图片上传至七牛云对象存储的小工具。目�
 - webp
 - gif
 - [avif](https://aomediacodec.github.io/av1-avif/)
+- svg
 
 ## 编译
 
@@ -49,6 +50,6 @@ EOF
 ## 使用
 
 ```bash
-$ ./faust --image ./test/Go-Logo_Fuchsia.jpg upload
+$ faust --image ./test/Go-Logo_Fuchsia.jpg upload
 INFO[2020-01-01T09:10:00+08:00] image url: [https://pic.crazytaxii.com/24-04-19/51577654.png]
 ```
