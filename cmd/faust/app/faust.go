@@ -44,15 +44,15 @@ func NewFaustApp(ver string) *cli.App {
 					}()
 
 					if cfg, err = opts.Config(); err != nil {
-						return err
+						return
 					}
 
 					up := uploader.NewKodoUploader(cfg.QServiceConfig)
-					ctx, cancel := context.WithTimeout(context.Background(), cfg.Timeout)
+					ctx, cancel := context.WithTimeout(c.Context, cfg.Timeout)
 					defer cancel()
 					res, err := up.Upload(ctx, opts.ImagePath)
 					if err != nil {
-						return err
+						return
 					}
 					log.WithFields(
 						log.Fields{
@@ -61,7 +61,7 @@ func NewFaustApp(ver string) *cli.App {
 							"hash": res.Hash,
 						},
 					).Infof("image url: %v", res.URLs)
-					return nil
+					return
 				},
 				Flags: cfg.QServiceConfig.Flags(),
 			},

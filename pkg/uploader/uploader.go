@@ -32,7 +32,7 @@ type Uploader interface {
 type (
 	// qiniu
 	QServiceConfig struct {
-		AccessKey string `jaon:"access_key" yaml:"accessKey"`
+		AccessKey string `json:"access_key" yaml:"accessKey"`
 		SecretKey string `json:"secret_key" yaml:"secretKey"`
 		Expires   uint64 `json:"expires" yaml:"expires"`
 		Bucket    string `json:"bucket" yaml:"bucket"`
