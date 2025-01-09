@@ -28,43 +28,47 @@ func NewFaustApp(ver string) *cli.App {
 		Usage:   "A simple tool for uploading image to object storage service",
 		Version: ver,
 		Action: func(c *cli.Context) error {
-			return nil
+			return cli.ShowAppHelp(c)
 		},
 		Flags: opts.Flags(),
 		Commands: []*cli.Command{
 			{
 				Name:    "upload",
 				Aliases: []string{"up"},
-				Usage:   "upload image to object storage service",
-				Action: func(c *cli.Context) (err error) {
-					defer func() {
-						if err != nil {
-							log.Errorf("error uploading image: %v", err)
-						}
-					}()
-
-					if cfg, err = opts.Config(); err != nil {
-						return
-					}
-
-					up := uploader.NewKodoUploader(cfg.QServiceConfig)
-					ctx, cancel := context.WithTimeout(c.Context, cfg.Timeout)
-					defer cancel()
-					res, err := up.Upload(ctx, opts.ImagePath)
+				Usage:   "Upload image to object storage service",
+				Action: func(c *cli.Context) error {
+					cfg, err := opts.Config()
 					if err != nil {
-						return
+						log.Errorf("error loading config: %v", err)
+						return err
 					}
-					log.WithFields(
-						log.Fields{
-							"key":  res.Key,
-							"size": units.HumanSize(float64(res.Fsize)),
-							"hash": res.Hash,
-						},
-					).Infof("image url: %v", res.URLs)
-					return
+
+					if err = runUpload(c.Context, cfg, opts.ImagePath); err != nil {
+						log.Errorf("error uploading image: %v", err)
+					}
+					return err
 				},
 				Flags: cfg.QServiceConfig.Flags(),
 			},
 		},
 	}
+}
+
+func runUpload(ctx context.Context, cfg *config.AppConfig, path string) error {
+	up := uploader.NewKodoUploader(cfg.QServiceConfig)
+	ctx, cancel := context.WithTimeout(ctx, cfg.Timeout)
+	defer cancel()
+
+	res, err := up.Upload(ctx, path)
+	if err != nil {
+		return err
+	}
+	log.WithFields(
+		log.Fields{
+			"key":  res.Key,
+			"size": units.HumanSize(float64(res.Fsize)),
+			"hash": res.Hash,
+		},
+	).Infof("image url: %v", res.URLs)
+	return nil
 }

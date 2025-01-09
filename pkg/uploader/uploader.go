@@ -25,8 +25,8 @@ const (
 	fmtKodoReturnBody = `{"key":"$(key)","hash":"$(etag)","fsize":$(fsize),"bucket":"$(bucket)"}`
 )
 
-type Uploader interface {
-	Upload() error
+type OSSInterface interface {
+	Upload(ctx context.Context, file string) error
 }
 
 type (
