@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/crazytaxii/faust/pkg/uploader"
+	"github.com/crazytaxii/faust/pkg/service"
 
 	"github.com/spf13/viper"
 )
@@ -19,13 +19,13 @@ const (
 )
 
 type AppConfig struct {
-	*uploader.QServiceConfig `mapstructure:",squash"`
-	Timeout                  time.Duration `json:"timeout" yaml:"timeout"`
+	*service.QServiceConfig `mapstructure:",squash"`
+	Timeout                 time.Duration `json:"timeout" yaml:"timeout"`
 }
 
 func NewAppConfig() *AppConfig {
 	return &AppConfig{
-		QServiceConfig: uploader.NewQServiceConfig(),
+		QServiceConfig: service.NewQServiceConfig(),
 		Timeout:        defaultTimeout,
 	}
 }

@@ -5,7 +5,7 @@ import (
 
 	"github.com/crazytaxii/faust/cmd/faust/app/config"
 	"github.com/crazytaxii/faust/cmd/faust/app/options"
-	"github.com/crazytaxii/faust/pkg/uploader"
+	"github.com/crazytaxii/faust/pkg/service"
 
 	"github.com/docker/go-units"
 	log "github.com/sirupsen/logrus"
@@ -35,18 +35,9 @@ func NewFaustApp(ver string) *cli.App {
 			{
 				Name:    "upload",
 				Aliases: []string{"up"},
-				Usage:   "Upload image to object storage service",
+				Usage:   "Upload image or certificates to object storage service",
 				Action: func(c *cli.Context) error {
-					cfg, err := opts.Config()
-					if err != nil {
-						log.Errorf("error loading config: %v", err)
-						return err
-					}
-
-					if err = runUpload(c.Context, cfg, opts.ImagePath); err != nil {
-						log.Errorf("error uploading image: %v", err)
-					}
-					return err
+					return runUpload(c.Context, opts)
 				},
 				Flags: cfg.QServiceConfig.Flags(),
 			},
@@ -54,21 +45,42 @@ func NewFaustApp(ver string) *cli.App {
 	}
 }
 
-func runUpload(ctx context.Context, cfg *config.AppConfig, path string) error {
-	up := uploader.NewKodoUploader(cfg.QServiceConfig)
+func runUpload(ctx context.Context, opts *options.AppOptions) error {
+	cfg, err := opts.Config()
+	if err != nil {
+		log.Errorf("error loading config: %v", err)
+		return err
+	}
+	var si service.ServiceInterface = service.NewQiniuService(cfg.QServiceConfig)
 	ctx, cancel := context.WithTimeout(ctx, cfg.Timeout)
 	defer cancel()
 
-	res, err := up.Upload(ctx, path)
-	if err != nil {
-		return err
+	lf := make(log.Fields)
+	if opts.ImagePath != "" {
+		res, err := si.UploadImage(ctx, opts.ImagePath)
+		if err != nil {
+			log.Errorf("error uploading image: %v", err)
+			return err
+		}
+		lf["key"] = res.Key
+		lf["size"] = units.HumanSize(float64(res.Size))
+		lf["hash"] = res.Hash
+		lf["image_url"] = res.URLs
 	}
-	log.WithFields(
-		log.Fields{
-			"key":  res.Key,
-			"size": units.HumanSize(float64(res.Fsize)),
-			"hash": res.Hash,
-		},
-	).Infof("image url: %v", res.URLs)
+
+	if opts.CertPath != "" && opts.KeyPath != "" {
+		res, err := si.UploadCerts(ctx, opts.KeyPath, opts.CertPath)
+		if err != nil {
+			log.Errorf("error uploading certificates: %v", err)
+		}
+		if res != nil {
+			log.Errorf("error uploading certificates: %v", err)
+			return err
+		}
+		lf["common_name"] = res.CommonName
+		lf["expiration"] = res.Expiration
+	}
+
+	log.WithFields(lf).Info("upload successfully")
 	return nil
 }
