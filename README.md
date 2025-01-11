@@ -49,7 +49,14 @@ EOF
 
 ## 使用
 
-```bash
-$ faust --image ./test/Go-Logo_Fuchsia.jpg upload
-INFO[2020-01-01T09:10:00+08:00] image url: [https://pic.crazytaxii.com/24-04-19/51577654.png]
-```
+1. 上传图片
+
+    ```bash
+    $ faust --image ./test/Go-Logo_Fuchsia.jpg upload
+    ```
+
+1. 上传证书（私钥 + 证书链）
+
+    ```bash
+    $ faust --key /path/to/private_key --cert /path/to/full_chan_certificates upload
+    ```
