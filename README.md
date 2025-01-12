@@ -1,6 +1,6 @@
-# Faust ![CI Status](https://github.com/crazytaxii/faust/actions/workflows/ci.yaml/badge.svg)
+# faust ![CI Status](https://github.com/crazytaxii/faust/actions/workflows/ci.yaml/badge.svg)
 
-Faust 是一款将本地图片上传至七牛云对象存储的小工具。目前支持：
+faust 是一款将本地图片上传至*七牛云对象存储*的小工具。目前支持：
 
 - jpg
 - png
