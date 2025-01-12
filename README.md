@@ -17,12 +17,6 @@ faust 是一款将本地图片上传至*七牛云对象存储*的小工具。目
 $ make build
 ```
 
-## 安装
-
-```bash
-$ make install
-```
-
 ## 配置
 
 请先注册七牛云账号，并获取账号对应的 Access Key 和 Secret Key：

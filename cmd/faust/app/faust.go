@@ -72,9 +72,6 @@ func runUpload(ctx context.Context, opts *options.AppOptions) error {
 		res, err := si.UploadCerts(ctx, opts.KeyPath, opts.CertPath)
 		if err != nil {
 			log.Errorf("error uploading certificates: %v", err)
-		}
-		if res != nil {
-			log.Errorf("error uploading certificates: %v", err)
 			return err
 		}
 		lf["common_name"] = res.CommonName

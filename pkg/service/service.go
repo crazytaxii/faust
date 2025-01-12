@@ -182,7 +182,7 @@ type (
 func (s *QiniuService) UploadCerts(ctx context.Context, keyPath, certPath string) (*CertsUploadResponse, error) {
 	rawKeyData, err := os.ReadFile(keyPath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to read private key %s: %w", keyPath, err)
 	}
 	block, _ := pem.Decode(rawKeyData)
 	if block == nil {
@@ -191,7 +191,7 @@ func (s *QiniuService) UploadCerts(ctx context.Context, keyPath, certPath string
 
 	rawCertData, err := os.ReadFile(certPath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to read certificates %s: %w", certPath, err)
 	}
 	if block, _ = pem.Decode(rawCertData); block == nil {
 		return nil, errors.New("invalid certificate: no PEM data found")
