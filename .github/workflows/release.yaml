@@ -1,0 +1,38 @@
+on:
+  release:
+    types:
+    - created
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  releases-matrix:
+    name: Release Go Binary
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos:
+        - linux
+        - darwin
+        goarch:
+        - amd64
+        - arm64
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-go@v5
+      with:
+        go-version: '1.21'
+    - uses: wangyoucao577/go-release-action@v1.53
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        goversion: "1.21"
+        goos: ${{ matrix.goos }}
+        goarch: ${{ matrix.goarch }}
+        ldflags: "-s -w"
+        compress_assets: OFF
+        project_path: ./cmd/faust
+        binary_name: faust
+        overwrite: TRUE
+        md5sum: FALSE
