@@ -62,9 +62,9 @@ func runUpload(ctx context.Context, opts *options.AppOptions) error {
 			log.Errorf("error uploading image: %v", err)
 			return err
 		}
+		lf["bucket"] = res.Bucket
 		lf["key"] = res.Key
 		lf["size"] = units.HumanSize(float64(res.Size))
-		lf["hash"] = res.Hash
 		lf["image_url"] = res.URLs
 	}
 

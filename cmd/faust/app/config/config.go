@@ -50,13 +50,13 @@ func TryToLoadConfig(file string) (*AppConfig, error) {
 	viper.SetConfigType(strings.TrimPrefix(ext, "."))
 	viper.SetConfigName(strings.TrimSuffix(fileName, ext))
 	viper.AddConfigPath(cfgPath)
-	viper.AddConfigPath(".")
-	viper.AddConfigPath("/etc/faust")
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return nil, err
 	}
 	viper.AddConfigPath(path.Join(home, ".faust"))
+	viper.AddConfigPath("/etc/faust")
+	viper.AddConfigPath(".")
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			return cfg, nil

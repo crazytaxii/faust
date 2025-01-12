@@ -19,6 +19,8 @@ import (
 
 	_ "github.com/crazytaxii/faust/pkg/image"
 	"github.com/crazytaxii/faust/pkg/service/utils"
+	qh "github.com/qiniu/go-sdk/v7/storagev2/http_client"
+	qu "github.com/qiniu/go-sdk/v7/storagev2/uploader"
 
 	"github.com/qiniu/go-sdk/v7/auth"
 	"github.com/qiniu/go-sdk/v7/auth/qbox"
@@ -35,10 +37,10 @@ const (
 
 type (
 	ImageUploadResponse struct {
-		Key  string
-		Hash string
-		Size uint64
-		URLs []string
+		Bucket string
+		Key    string
+		Size   int64
+		URLs   []string
 	}
 	CertsUploadResponse struct {
 		CommonName string
@@ -61,14 +63,8 @@ type (
 	QiniuService struct {
 		config        *QServiceConfig
 		credentials   *qbox.Mac
-		uploader      *storage.FormUploader
 		bucketManager *storage.BucketManager
-	}
-	kodoPutRet struct {
-		Key    string `json:"key"`
-		Hash   string `json:"hash"`
-		Fsize  uint64 `json:"fsize"`
-		Bucket string `json:"bucket"`
+		uploader      *qu.UploadManager
 	}
 )
 
@@ -116,13 +112,16 @@ func (c *QServiceConfig) MakePutPolicy() *storage.PutPolicy {
 }
 
 func NewQiniuService(cfg *QServiceConfig) *QiniuService {
-	sc := &storage.Config{}
 	mac := auth.New(cfg.AccessKey, cfg.SecretKey)
 	return &QiniuService{
 		config:        cfg,
 		credentials:   mac,
-		uploader:      storage.NewFormUploader(sc),
-		bucketManager: storage.NewBucketManager(mac, sc),
+		bucketManager: storage.NewBucketManager(mac, &storage.Config{}),
+		uploader: qu.NewUploadManager(&qu.UploadManagerOptions{
+			Options: qh.Options{
+				Credentials: mac,
+			},
+		}),
 	}
 }
 
@@ -143,16 +142,13 @@ func (s *QiniuService) UploadImage(ctx context.Context, name string) (*ImageUplo
 		return nil, err
 	}
 
-	if _, err := f.Seek(0, io.SeekStart); err != nil {
-		return nil, err
-	}
-
-	pp := s.config.MakePutPolicy()
-	token := pp.UploadToken(s.credentials)
-	ret := &kodoPutRet{}
+	// doc: https://developer.qiniu.com/kodo/1238/go#upload-file
 	key := utils.GenUploadKey(format)
-	// upload file
-	if err := s.uploader.Put(ctx, ret, token, key, f, fi.Size(), &storage.PutExtra{}); err != nil {
+	if err := s.uploader.UploadFile(ctx, name, &qu.ObjectOptions{
+		BucketName: s.config.Bucket,
+		ObjectName: &key,
+		FileName:   key,
+	}, nil); err != nil {
 		return nil, err
 	}
 
@@ -163,14 +159,14 @@ func (s *QiniuService) UploadImage(ctx context.Context, name string) (*ImageUplo
 	}
 	urls := make([]string, len(domainInfo))
 	for i, domain := range domainInfo {
-		urls[i] = fmt.Sprintf("https://%s/%s", domain.Domain, ret.Key)
+		urls[i] = fmt.Sprintf("https://%s/%s", domain.Domain, key)
 	}
 
 	return &ImageUploadResponse{
-		Key:  ret.Key,
-		Hash: ret.Hash,
-		Size: ret.Fsize,
-		URLs: urls,
+		Bucket: s.config.Bucket,
+		Key:    key,
+		Size:   fi.Size(),
+		URLs:   urls,
 	}, nil
 }
 
@@ -216,7 +212,7 @@ func (s *QiniuService) UploadCerts(ctx context.Context, keyPath, certPath string
 		Key:        string(rawKeyData),
 		CertChain:  string(rawCertData),
 	}
-	if _, err = postRequest(ctx, s.credentials, "/sslcert", reqBody); err != nil {
+	if _, err := postRequest(ctx, s.credentials, "/sslcert", reqBody); err != nil {
 		return nil, err
 	}
 	return &CertsUploadResponse{
