@@ -28,20 +28,17 @@ func (o *AppOptions) Flags() []cli.Flag {
 			Destination: &o.ConfigFile,
 		},
 		&cli.PathFlag{
-			Category:    "upload",
 			Name:        "image",
 			Aliases:     []string{"i"},
 			Usage:       "`file` path of image to be uploaded",
 			Destination: &o.ImagePath,
 		},
 		&cli.PathFlag{
-			Category:    "upload",
 			Name:        "cert",
 			Usage:       "`file` path of certificate to be uploaded",
 			Destination: &o.CertPath,
 		},
 		&cli.PathFlag{
-			Category:    "upload",
 			Name:        "key",
 			Usage:       "`file` path of private key to be uploaded",
 			Destination: &o.KeyPath,

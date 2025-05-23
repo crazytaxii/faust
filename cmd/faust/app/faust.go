@@ -30,7 +30,6 @@ func NewFaustApp(ver string) *cli.App {
 		Action: func(c *cli.Context) error {
 			return cli.ShowAppHelp(c)
 		},
-		Flags: opts.Flags(),
 		Commands: []*cli.Command{
 			{
 				Name:    "upload",
@@ -39,7 +38,7 @@ func NewFaustApp(ver string) *cli.App {
 				Action: func(c *cli.Context) error {
 					return runUpload(c.Context, opts)
 				},
-				Flags: cfg.QServiceConfig.Flags(),
+				Flags: append(cfg.Flags(), opts.Flags()...),
 			},
 		},
 	}
