@@ -52,5 +52,5 @@ EOF
 1. 上传证书（私钥 + 证书链）
 
     ```bash
-    $ faust upload --key /path/to/private_key --cert /path/to/full_chan_certificates
+    $ faust upload --key /path/to/private.key --cert /path/to/fullchain.cer
     ```
