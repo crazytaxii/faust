@@ -1,6 +1,6 @@
 # faust ![CI Status](https://github.com/crazytaxii/faust/actions/workflows/ci.yaml/badge.svg)
 
-faust 是一款将本地图片上传至*七牛云对象存储*的小工具。目前支持：
+faust 是一款将本地图片上传至七牛云对象存储的小工具。目前支持：
 
 - jpg
 - png
@@ -46,11 +46,11 @@ EOF
 1. 上传图片
 
     ```bash
-    $ faust --image ./test/Go-Logo_Fuchsia.jpg upload
+    $ faust upload --image ./test/Go-Logo_Fuchsia.jpg
     ```
 
 1. 上传证书（私钥 + 证书链）
 
     ```bash
-    $ faust --key /path/to/private_key --cert /path/to/full_chan_certificates upload
+    $ faust upload --key /path/to/private_key --cert /path/to/full_chan_certificates
     ```
