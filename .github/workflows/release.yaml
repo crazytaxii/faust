@@ -21,8 +21,6 @@ jobs:
         - arm64
     steps:
     - uses: actions/checkout@v6
-    - name: Get short commit hash
-      run: echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
     - uses: actions/setup-go@v6
       with:
         go-version: '1.25'
@@ -32,7 +30,7 @@ jobs:
         goversion: "1.25"
         goos: ${{ matrix.goos }}
         goarch: ${{ matrix.goarch }}
-        ldflags: "-s -w -X 'main.AppVersion=${{ env.COMMIT_HASH }}'"
+        ldflags: "-s -w -X 'main.AppVersion=${{ github.ref_name }}'"
         compress_assets: OFF
         project_path: ./cmd
         binary_name: faust
