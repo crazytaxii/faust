@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	faust "github.com/crazytaxii/faust/cmd/faust/app"
+	faust "github.com/crazytaxii/faust/cmd/app"
 )
 
 var AppVersion string

@@ -1,9 +1,8 @@
-package config
+package faust
 
 import (
 	"errors"
 	"os"
-	"path"
 	"path/filepath"
 	"strings"
 	"time"
@@ -18,20 +17,20 @@ const (
 	defaultTimeout    = 10 * time.Second
 )
 
-type AppConfig struct {
+type Config struct {
 	*service.QServiceConfig `mapstructure:",squash"`
 	Timeout                 time.Duration `json:"timeout" yaml:"timeout"`
 }
 
-func NewAppConfig() *AppConfig {
-	return &AppConfig{
+func NewConfig() *Config {
+	return &Config{
 		QServiceConfig: service.NewQServiceConfig(),
 		Timeout:        defaultTimeout,
 	}
 }
 
-func TryToLoadConfig(file string) (*AppConfig, error) {
-	cfg := NewAppConfig()
+func TryToLoadConfig(file string) (*Config, error) {
+	cfg := NewConfig()
 	if file == "" {
 		file = defaultConfigName
 	}
@@ -47,24 +46,26 @@ func TryToLoadConfig(file string) (*AppConfig, error) {
 		return nil, err
 	}
 
-	viper.SetConfigType(strings.TrimPrefix(ext, "."))
-	viper.SetConfigName(strings.TrimSuffix(fileName, ext))
-	viper.AddConfigPath(cfgPath)
+	v := viper.New()
+	v.SetConfigType(strings.TrimPrefix(ext, "."))
+	v.SetConfigName(strings.TrimSuffix(fileName, ext))
+	v.AddConfigPath(cfgPath)
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return nil, err
 	}
-	viper.AddConfigPath(path.Join(home, ".faust"))
-	viper.AddConfigPath("/etc/faust")
-	viper.AddConfigPath(".")
-	if err := viper.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+	v.AddConfigPath(filepath.Join(home, ".faust"))
+	v.AddConfigPath("/etc/faust")
+	v.AddConfigPath(".")
+	if err := v.ReadInConfig(); err != nil {
+		var notFound viper.ConfigFileNotFoundError
+		if errors.As(err, &notFound) {
 			return cfg, nil
 		}
 		return nil, err
 	}
 
-	if err := viper.Unmarshal(cfg); err != nil {
+	if err := v.Unmarshal(cfg); err != nil {
 		return nil, err
 	}
 	return cfg, nil

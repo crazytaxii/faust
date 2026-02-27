@@ -20,16 +20,16 @@ jobs:
         - amd64
         - arm64
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Get short commit hash
       run: echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-    - uses: actions/setup-go@v5
+    - uses: actions/setup-go@v6
       with:
-        go-version: '1.21'
-    - uses: wangyoucao577/go-release-action@v1.53
+        go-version: '1.25'
+    - uses: wangyoucao577/go-release-action@v1.55
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        goversion: "1.21"
+        goversion: "1.25"
         goos: ${{ matrix.goos }}
         goarch: ${{ matrix.goarch }}
         ldflags: "-s -w -X 'main.AppVersion=${{ env.COMMIT_HASH }}'"
