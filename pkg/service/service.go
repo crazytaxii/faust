@@ -131,7 +131,7 @@ func (s *QiniuService) UploadImage(ctx context.Context, name string) (*ImageUplo
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 	fi, err := f.Stat()
 	if err != nil {
 		return nil, err
@@ -242,7 +242,7 @@ func postRequest(ctx context.Context, mac *auth.Credentials, path string, body i
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, client.ResponseError(resp)
