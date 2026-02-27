@@ -34,7 +34,7 @@ jobs:
         goarch: ${{ matrix.goarch }}
         ldflags: "-s -w -X 'main.AppVersion=${{ env.COMMIT_HASH }}'"
         compress_assets: OFF
-        project_path: ./cmd/faust
+        project_path: ./cmd
         binary_name: faust
         overwrite: TRUE
         md5sum: FALSE
