@@ -8,7 +8,7 @@ import (
 
 	"github.com/docker/go-units"
 	log "github.com/sirupsen/logrus"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 func init() {
@@ -18,23 +18,23 @@ func init() {
 	})
 }
 
-func NewFaustApp(ver string) *cli.App {
+func NewFaustApp(ver string) *cli.Command {
 	opts := NewOptions()
 
-	return &cli.App{
+	return &cli.Command{
 		Name:    "faust",
 		Usage:   "A simple tool for uploading image to object storage service",
 		Version: ver,
-		Action: func(c *cli.Context) error {
-			return cli.ShowAppHelp(c)
+		Action: func(ctx context.Context, cmd *cli.Command) error {
+			return cli.ShowAppHelp(cmd)
 		},
 		Commands: []*cli.Command{
 			{
 				Name:    "upload",
 				Aliases: []string{"up"},
 				Usage:   "Upload image or certificates to object storage service",
-				Action: func(c *cli.Context) error {
-					if err := runUpload(c, opts); err != nil {
+				Action: func(ctx context.Context, cmd *cli.Command) error {
+					if err := runUpload(ctx, cmd, opts); err != nil {
 						log.Error(err)
 						return err
 					}
@@ -46,13 +46,13 @@ func NewFaustApp(ver string) *cli.App {
 	}
 }
 
-func runUpload(c *cli.Context, opts *Options) error {
-	if err := opts.LoadConfig(c); err != nil {
+func runUpload(ctx context.Context, cmd *cli.Command, opts *Options) error {
+	if err := opts.LoadConfig(); err != nil {
 		return fmt.Errorf("error loading config: %w", err)
 	}
 
 	var si service.ServiceInterface = service.NewQiniuService(opts.Config.QServiceConfig)
-	ctx, cancel := context.WithTimeout(c.Context, opts.Config.Timeout)
+	ctx, cancel := context.WithTimeout(ctx, opts.Config.Timeout)
 	defer cancel()
 
 	lf := make(log.Fields)
@@ -73,7 +73,7 @@ func runUpload(c *cli.Context, opts *Options) error {
 		lf["common_name"] = res.CommonName
 		lf["expiration"] = res.Expiration
 	} else {
-		return cli.ShowSubcommandHelp(c)
+		return cli.ShowSubcommandHelp(cmd)
 	}
 
 	log.WithFields(lf).Info("upload successfully")

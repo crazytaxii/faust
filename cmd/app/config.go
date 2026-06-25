@@ -1,6 +1,7 @@
 package faust
 
 import (
+	"cmp"
 	"errors"
 	"os"
 	"path/filepath"
@@ -31,9 +32,9 @@ func NewConfig() *Config {
 
 func TryToLoadConfig(file string) (*Config, error) {
 	cfg := NewConfig()
-	if file == "" {
-		file = defaultConfigName
-	}
+
+	exist := file != ""
+	file = cmp.Or(file, defaultConfigName)
 	cfgFile, err := filepath.Abs(file)
 	if err != nil {
 		return nil, err
@@ -50,13 +51,15 @@ func TryToLoadConfig(file string) (*Config, error) {
 	v.SetConfigType(strings.TrimPrefix(ext, "."))
 	v.SetConfigName(strings.TrimSuffix(fileName, ext))
 	v.AddConfigPath(cfgPath)
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return nil, err
+	if !exist {
+		home, err := os.UserHomeDir()
+		if err != nil {
+			return nil, err
+		}
+		v.AddConfigPath(filepath.Join(home, ".faust"))
+		v.AddConfigPath("/etc/faust")
+		v.AddConfigPath(".")
 	}
-	v.AddConfigPath(filepath.Join(home, ".faust"))
-	v.AddConfigPath("/etc/faust")
-	v.AddConfigPath(".")
 	if err := v.ReadInConfig(); err != nil {
 		var notFound viper.ConfigFileNotFoundError
 		if errors.As(err, &notFound) {

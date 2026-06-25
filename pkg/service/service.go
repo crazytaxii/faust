@@ -8,16 +8,12 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
-	"image"
-	_ "image/gif"
-	_ "image/jpeg"
-	_ "image/png"
 	"io"
 	"net/http"
 	"os"
 	"time"
 
-	_ "github.com/crazytaxii/faust/pkg/image"
+	"github.com/crazytaxii/faust/pkg/image"
 	"github.com/crazytaxii/faust/pkg/service/utils"
 	qh "github.com/qiniu/go-sdk/v7/storagev2/http_client"
 	qu "github.com/qiniu/go-sdk/v7/storagev2/uploader"
@@ -26,7 +22,6 @@ import (
 	"github.com/qiniu/go-sdk/v7/auth/qbox"
 	"github.com/qiniu/go-sdk/v7/client"
 	"github.com/qiniu/go-sdk/v7/storage"
-	"github.com/urfave/cli/v2"
 	_ "golang.org/x/image/webp"
 )
 
@@ -74,35 +69,6 @@ func NewQServiceConfig() *QServiceConfig {
 	}
 }
 
-func (c *QServiceConfig) Flags() []cli.Flag {
-	return []cli.Flag{
-		&cli.StringFlag{
-			Name:        "access-key",
-			Aliases:     []string{"a"},
-			Usage:       "access key of qiniu kodo object storage service",
-			Destination: &c.AccessKey,
-		},
-		&cli.StringFlag{
-			Name:        "secret-key",
-			Aliases:     []string{"s"},
-			Usage:       "secret key of qiniu kodo object storage service",
-			Destination: &c.SecretKey,
-		},
-		&cli.Uint64Flag{
-			Name:        "expires",
-			Aliases:     []string{"e"},
-			Usage:       "expires time",
-			Destination: &c.Expires,
-		},
-		&cli.StringFlag{
-			Name:        "bucket",
-			Aliases:     []string{"b"},
-			Usage:       "bucket",
-			Destination: &c.Bucket,
-		},
-	}
-}
-
 func (c *QServiceConfig) MakePutPolicy() *storage.PutPolicy {
 	return &storage.PutPolicy{
 		Scope:      c.Bucket,
@@ -127,17 +93,7 @@ func NewQiniuService(cfg *QServiceConfig) *QiniuService {
 
 // UploadImage reads file and put on to the specific bucket.
 func (s *QiniuService) UploadImage(ctx context.Context, name string) (*ImageUploadResponse, error) {
-	f, err := os.Open(name)
-	if err != nil {
-		return nil, err
-	}
-	defer func() { _ = f.Close() }()
-	fi, err := f.Stat()
-	if err != nil {
-		return nil, err
-	}
-
-	_, format, err := image.DecodeConfig(f)
+	format, size, err := image.DiscoverImage(name)
 	if err != nil {
 		return nil, err
 	}
@@ -145,9 +101,10 @@ func (s *QiniuService) UploadImage(ctx context.Context, name string) (*ImageUplo
 	// doc: https://developer.qiniu.com/kodo/1238/go#upload-file
 	key := utils.GenUploadKey(format)
 	if err := s.uploader.UploadFile(ctx, name, &qu.ObjectOptions{
-		BucketName: s.config.Bucket,
-		ObjectName: &key,
-		FileName:   key,
+		BucketName:  s.config.Bucket,
+		ObjectName:  &key,
+		FileName:    key,
+		ContentType: "application/json",
 	}, nil); err != nil {
 		return nil, err
 	}
@@ -165,7 +122,7 @@ func (s *QiniuService) UploadImage(ctx context.Context, name string) (*ImageUplo
 	return &ImageUploadResponse{
 		Bucket: s.config.Bucket,
 		Key:    key,
-		Size:   fi.Size(),
+		Size:   size,
 		URLs:   urls,
 	}, nil
 }
@@ -193,13 +150,28 @@ func (s *QiniuService) UploadCerts(ctx context.Context, keyPath, certPath string
 	if err != nil {
 		return nil, fmt.Errorf("failed to read certificates %s: %w", certPath, err)
 	}
-	if block, _ = pem.Decode(rawCertData); block == nil {
+
+	// Decode and parse all PEM blocks to support full certificate chains
+	var cert *x509.Certificate
+	rest := rawCertData
+	for {
+		var block *pem.Block
+		block, rest = pem.Decode(rest)
+		if block == nil {
+			break
+		}
+		parsedCert, err := x509.ParseCertificate(block.Bytes)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse certificate: %w", err)
+		}
+		if cert == nil {
+			cert = parsedCert // leaf certificate (first in chain)
+		}
+	}
+	if cert == nil {
 		return nil, errors.New("invalid certificate: no PEM data found")
 	}
-	cert, err := x509.ParseCertificate(block.Bytes)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse certificate: %w", err)
-	}
+
 	now := time.Now()
 	if now.Before(cert.NotBefore) || now.After(cert.NotAfter) {
 		return nil, errors.New("certificate is expired or not yet valid")
