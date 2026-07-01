@@ -54,3 +54,9 @@ EOF
     ```bash
     $ faust upload --key /path/to/private.key --cert /path/to/fullchain.cer
     ```
+
+1. 删除图片
+
+    ```bash
+    $ faust delete --key 26-07-01/49688378.jpeg
+    ```
