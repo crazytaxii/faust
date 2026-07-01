@@ -23,11 +23,11 @@ jobs:
     - uses: actions/checkout@v6
     - uses: actions/setup-go@v6
       with:
-        go-version: '1.25'
+        go-version: '1.26'
     - uses: wangyoucao577/go-release-action@v1.55
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        goversion: "1.25"
+        goversion: "1.26"
         goos: ${{ matrix.goos }}
         goarch: ${{ matrix.goarch }}
         ldflags: "-s -w -X 'main.AppVersion=${{ github.ref_name }}'"
