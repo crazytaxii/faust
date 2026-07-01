@@ -2,24 +2,16 @@ package faust
 
 import "github.com/urfave/cli/v3"
 
-type Options struct {
+type GlobalOptions struct {
 	// path of config file
 	ConfigFile string
-	// path of image to be upload
-	Config *Config
-
-	ImagePath string
-	CertPath  string
-	KeyPath   string
 }
 
-func NewOptions() *Options {
-	return &Options{
-		Config: NewConfig(),
-	}
+func NewGlobalOptions() *GlobalOptions {
+	return &GlobalOptions{}
 }
 
-func (o *Options) Flags() []cli.Flag {
+func (o *GlobalOptions) Flags() []cli.Flag {
 	return []cli.Flag{
 		&cli.StringFlag{
 			Name:        "config-file",
@@ -27,6 +19,35 @@ func (o *Options) Flags() []cli.Flag {
 			Usage:       "`file` path of configuration to be loaded",
 			Destination: &o.ConfigFile,
 		},
+	}
+}
+
+func (o *GlobalOptions) LoadConfig() (*Config, error) {
+	// load config file first
+	return TryToLoadConfig(o.ConfigFile)
+}
+
+func (o *GlobalOptions) NewUploadOptions() *UploadOptions {
+	return &UploadOptions{
+		GlobalOptions: o,
+	}
+}
+
+func (o *GlobalOptions) NewDeleteOptions() *DeleteOptions {
+	return &DeleteOptions{
+		GlobalOptions: o,
+	}
+}
+
+type UploadOptions struct {
+	*GlobalOptions
+	ImagePath string
+	CertPath  string
+	KeyPath   string
+}
+
+func (o *UploadOptions) Flags() []cli.Flag {
+	return []cli.Flag{
 		&cli.StringFlag{
 			Name:        "image",
 			Aliases:     []string{"i"},
@@ -46,13 +67,17 @@ func (o *Options) Flags() []cli.Flag {
 	}
 }
 
-func (o *Options) LoadConfig() error {
-	// load config file first
-	cfg, err := TryToLoadConfig(o.ConfigFile)
-	if err != nil {
-		return err
-	}
+type DeleteOptions struct {
+	*GlobalOptions
+	Key string
+}
 
-	o.Config = cfg
-	return nil
+func (o *DeleteOptions) Flags() []cli.Flag {
+	return []cli.Flag{
+		&cli.StringFlag{
+			Name:        "key",
+			Usage:       "key of image to be deleted",
+			Destination: &o.Key,
+		},
+	}
 }

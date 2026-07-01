@@ -46,6 +46,7 @@ type (
 type ServiceInterface interface {
 	UploadImage(ctx context.Context, image string) (*ImageUploadResponse, error)
 	UploadCerts(ctx context.Context, key, cert string) (*CertsUploadResponse, error)
+	DeleteImage(ctx context.Context, name string) error
 }
 
 type (
@@ -127,14 +128,16 @@ func (s *QiniuService) UploadImage(ctx context.Context, name string) (*ImageUplo
 	}, nil
 }
 
-type (
-	SSLCerts struct {
-		Name       string `json:"name"`
-		CommonName string `json:"common_name"`
-		Key        string `json:"pri"`
-		CertChain  string `json:"ca"`
-	}
-)
+func (s *QiniuService) DeleteImage(ctx context.Context, name string) error {
+	return s.bucketManager.Delete(s.config.Bucket, name)
+}
+
+type SSLCerts struct {
+	Name       string `json:"name"`
+	CommonName string `json:"common_name"`
+	Key        string `json:"pri"`
+	CertChain  string `json:"ca"`
+}
 
 func (s *QiniuService) UploadCerts(ctx context.Context, keyPath, certPath string) (*CertsUploadResponse, error) {
 	rawKeyData, err := os.ReadFile(keyPath)
